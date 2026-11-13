@@ -1,0 +1,7 @@
+# secrets — never commit
+exporter/.env
+
+# Python
+exporter/.venv/
+__pycache__/
+*.pyc
