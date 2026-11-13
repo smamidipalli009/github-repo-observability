@@ -1,0 +1,436 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "github-repo-health",
+    "title": "GitHub Repository Health",
+    "tags": ["github", "observability", "ci-cd", "template"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "5m",
+    "time": { "from": "now-30d", "to": "now" },
+    "templating": {
+      "list": [
+        {
+          "name": "owner",
+          "label": "GitHub Owner",
+          "type": "textbox",
+          "query": "smamidipalli009",
+          "current": { "value": "smamidipalli009", "text": "smamidipalli009", "selected": true },
+          "options": [{ "value": "smamidipalli009", "text": "smamidipalli009", "selected": true }],
+          "hide": 0,
+          "skipUrlSync": false
+        },
+        {
+          "name": "repo",
+          "label": "Repository",
+          "type": "query",
+          "datasource": { "type": "grafana-github-datasource", "uid": "ffsfwqs2biby8d" },
+          "query": { "queryType": "Repositories", "owner": "${owner}", "refId": "A" },
+          "current": {},
+          "hide": 0,
+          "includeAll": false,
+          "multi": false,
+          "refresh": 2,
+          "sort": 1
+        }
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "type": "stat",
+        "title": "Open Issues",
+        "gridPos": { "x": 0, "y": 0, "w": 6, "h": 5 },
+        "datasource": { "type": "grafana-github-datasource", "uid": "ffsfwqs2biby8d" },
+        "targets": [
+          {
+            "refId": "A",
+            "queryType": "Issues",
+            "owner": "${owner}",
+            "repository": "${repo}",
+            "state": "open"
+          }
+        ],
+        "options": {
+          "reduceOptions": {
+            "calcs": ["count"],
+            "fields": "/^number$/"
+          },
+          "colorMode": "none",
+          "graphMode": "none",
+          "textMode": "value",
+          "orientation": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": { "mode": "fixed", "fixedColor": "text" }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "type": "stat",
+        "title": "Open Pull Requests",
+        "gridPos": { "x": 6, "y": 0, "w": 6, "h": 5 },
+        "datasource": { "type": "grafana-github-datasource", "uid": "ffsfwqs2biby8d" },
+        "targets": [
+          {
+            "refId": "A",
+            "queryType": "Pull_Requests",
+            "owner": "${owner}",
+            "repository": "${repo}",
+            "state": "open"
+          }
+        ],
+        "options": {
+          "reduceOptions": {
+            "calcs": ["count"],
+            "fields": "/^number$/"
+          },
+          "colorMode": "none",
+          "graphMode": "none",
+          "textMode": "value",
+          "orientation": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": { "mode": "fixed", "fixedColor": "text" }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "type": "stat",
+        "title": "Total Workflows",
+        "gridPos": { "x": 12, "y": 0, "w": 6, "h": 5 },
+        "datasource": { "type": "grafana-github-datasource", "uid": "ffsfwqs2biby8d" },
+        "targets": [
+          {
+            "refId": "A",
+            "queryType": "Workflows",
+            "owner": "${owner}",
+            "repository": "${repo}"
+          }
+        ],
+        "options": {
+          "reduceOptions": {
+            "calcs": ["count"],
+            "fields": "/^id$/"
+          },
+          "colorMode": "none",
+          "graphMode": "none",
+          "textMode": "value",
+          "orientation": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": { "mode": "fixed", "fixedColor": "text" }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "type": "stat",
+        "title": "Latest Release",
+        "gridPos": { "x": 18, "y": 0, "w": 6, "h": 5 },
+        "datasource": { "type": "grafana-github-datasource", "uid": "ffsfwqs2biby8d" },
+        "targets": [
+          {
+            "refId": "A",
+            "queryType": "Releases",
+            "owner": "${owner}",
+            "repository": "${repo}"
+          }
+        ],
+        "options": {
+          "reduceOptions": {
+            "calcs": ["lastNotNull"],
+            "fields": "/^name$/"
+          },
+          "colorMode": "none",
+          "graphMode": "none",
+          "textMode": "value",
+          "orientation": "auto"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "fixed", "fixedColor": "text" }
+          }
+        }
+      },
+      {
+        "id": 10,
+        "type": "row",
+        "title": "CI / CD — Defined Workflows",
+        "gridPos": { "x": 0, "y": 5, "w": 24, "h": 1 },
+        "collapsed": false
+      },
+      {
+        "id": 5,
+        "type": "table",
+        "title": "Defined Workflows",
+        "gridPos": { "x": 0, "y": 6, "w": 16, "h": 10 },
+        "datasource": { "type": "grafana-github-datasource", "uid": "ffsfwqs2biby8d" },
+        "targets": [
+          {
+            "refId": "A",
+            "queryType": "Workflows",
+            "owner": "${owner}",
+            "repository": "${repo}"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "renameByName": {
+                "name": "Workflow",
+                "path": "File",
+                "state": "State",
+                "updated_at": "Last Updated"
+              },
+              "indexByName": {
+                "name": 0,
+                "path": 1,
+                "state": 2,
+                "updated_at": 3
+              },
+              "excludeByName": {
+                "id": true,
+                "created_at": true,
+                "url": true,
+                "html_url": true,
+                "node_id": true,
+                "badge_url": true
+              }
+            }
+          }
+        ],
+        "options": { "showHeader": true },
+        "fieldConfig": {
+          "defaults": { "custom": { "align": "auto", "displayMode": "auto" } },
+          "overrides": [
+            {
+              "matcher": { "id": "byName", "options": "State" },
+              "properties": [
+                { "id": "custom.displayMode", "value": "color-background" },
+                {
+                  "id": "mappings",
+                  "value": [
+                    { "type": "value", "options": { "active": { "text": "active", "color": "green", "index": 0 } } },
+                    { "type": "value", "options": { "disabled": { "text": "disabled", "color": "red", "index": 1 } } }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": 6,
+        "type": "table",
+        "title": "Top Contributors",
+        "gridPos": { "x": 16, "y": 6, "w": 8, "h": 10 },
+        "datasource": { "type": "grafana-github-datasource", "uid": "ffsfwqs2biby8d" },
+        "targets": [
+          {
+            "refId": "A",
+            "queryType": "Contributors",
+            "owner": "${owner}",
+            "repository": "${repo}"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "renameByName": {
+                "login": "Author",
+                "contributions": "Commits"
+              },
+              "indexByName": {
+                "login": 0,
+                "contributions": 1
+              },
+              "excludeByName": {
+                "id": true,
+                "node_id": true,
+                "type": true,
+                "site_admin": true,
+                "avatar_url": true,
+                "html_url": true,
+                "url": true,
+                "followers_url": true,
+                "following_url": true,
+                "gists_url": true,
+                "starred_url": true,
+                "subscriptions_url": true,
+                "organizations_url": true,
+                "repos_url": true,
+                "events_url": true,
+                "received_events_url": true,
+                "name": true,
+                "email": true
+              }
+            }
+          }
+        ],
+        "options": {
+          "showHeader": true,
+          "sortBy": [{ "displayName": "Commits", "desc": true }]
+        },
+        "fieldConfig": {
+          "defaults": { "custom": { "align": "auto", "displayMode": "auto" } }
+        }
+      },
+      {
+        "id": 11,
+        "type": "row",
+        "title": "Code Activity — Commits",
+        "gridPos": { "x": 0, "y": 16, "w": 24, "h": 1 },
+        "collapsed": false
+      },
+      {
+        "id": 7,
+        "type": "table",
+        "title": "Recent Commits",
+        "gridPos": { "x": 0, "y": 17, "w": 24, "h": 8 },
+        "datasource": { "type": "grafana-github-datasource", "uid": "ffsfwqs2biby8d" },
+        "targets": [
+          {
+            "refId": "A",
+            "queryType": "Commits",
+            "owner": "${owner}",
+            "repository": "${repo}",
+            "gitRef": "main"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "renameByName": {
+                "message": "Message",
+                "author_login": "Author",
+                "committed_at": "Date",
+                "id": "SHA"
+              },
+              "indexByName": {
+                "message": 0,
+                "author_login": 1,
+                "committed_at": 2,
+                "id": 3
+              },
+              "excludeByName": {
+                "author": true,
+                "author_email": true,
+                "author_company": true,
+                "pushed_at": true,
+                "additions": true,
+                "deletions": true,
+                "changed_files": true
+              }
+            }
+          }
+        ],
+        "options": { "showHeader": true },
+        "fieldConfig": {
+          "defaults": { "custom": { "align": "auto", "displayMode": "auto" } }
+        }
+      },
+      {
+        "id": 12,
+        "type": "row",
+        "title": "Pull Requests & Issues",
+        "gridPos": { "x": 0, "y": 25, "w": 24, "h": 1 },
+        "collapsed": false
+      },
+      {
+        "id": 8,
+        "type": "table",
+        "title": "Open Pull Requests",
+        "gridPos": { "x": 0, "y": 26, "w": 12, "h": 8 },
+        "datasource": { "type": "grafana-github-datasource", "uid": "ffsfwqs2biby8d" },
+        "targets": [
+          {
+            "refId": "A",
+            "queryType": "Pull_Requests",
+            "owner": "${owner}",
+            "repository": "${repo}",
+            "state": "open"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "renameByName": {
+                "number": "#",
+                "title": "Title",
+                "author_login": "Author",
+                "created_at": "Opened",
+                "base_ref_name": "Base"
+              },
+              "indexByName": {
+                "number": 0,
+                "title": 1,
+                "author_login": 2,
+                "base_ref_name": 3,
+                "created_at": 4
+              }
+            }
+          }
+        ],
+        "options": { "showHeader": true },
+        "fieldConfig": {
+          "defaults": { "custom": { "align": "auto", "displayMode": "auto" } }
+        }
+      },
+      {
+        "id": 9,
+        "type": "table",
+        "title": "Open Issues",
+        "gridPos": { "x": 12, "y": 26, "w": 12, "h": 8 },
+        "datasource": { "type": "grafana-github-datasource", "uid": "ffsfwqs2biby8d" },
+        "targets": [
+          {
+            "refId": "A",
+            "queryType": "Issues",
+            "owner": "${owner}",
+            "repository": "${repo}",
+            "state": "open"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "renameByName": {
+                "number": "#",
+                "title": "Title",
+                "author_login": "Author",
+                "created_at": "Opened"
+              },
+              "indexByName": {
+                "number": 0,
+                "title": 1,
+                "author_login": 2,
+                "created_at": 3
+              }
+            }
+          }
+        ],
+        "options": { "showHeader": true },
+        "fieldConfig": {
+          "defaults": { "custom": { "align": "auto", "displayMode": "auto" } }
+        }
+      }
+    ]
+  },
+  "overwrite": true,
+  "folderId": 0
+}
